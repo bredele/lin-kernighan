@@ -1,6 +1,6 @@
 {
   "name": "lin-kernighan",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "Adaptive k-opt heuristic improving TSP tours by swapping edges to shorten routes.",
   "main": "./dist/cjs/index.js",
   "files": [

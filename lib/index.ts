@@ -55,28 +55,56 @@ const nearestNeighborTour = (distanceMatrix: number[][]): number[] => {
 };
 
 /**
- * Performs a 2-opt swap by reversing the segment between two positions.
- * This is the core operation for improving tour efficiency.
+ * Calculates the improvement delta for a 2-opt swap without performing it.
+ * This avoids recalculating the entire tour distance.
  * @param tour Current tour as array of city indices
  * @param i Start position for the segment to reverse
  * @param k End position for the segment to reverse
- * @returns New tour with the segment reversed
+ * @param distanceMatrix 2D array containing distances between all city pairs
+ * @returns The change in tour distance (negative if improvement)
  */
+const calculate2OptDelta = (
+  tour: number[],
+  i: number,
+  k: number,
+  distanceMatrix: number[][]
+): number => {
+  const n = tour.length;
+  
+  // Current edges that will be removed
+  const edge1From = tour[i];
+  const edge1To = tour[(i + 1) % n];
+  const edge2From = tour[k];
+  const edge2To = tour[(k + 1) % n];
+  
+  // New edges that will be added
+  const newEdge1Distance = distanceMatrix[edge1From][edge2From];
+  const newEdge2Distance = distanceMatrix[edge1To][edge2To];
+  
+  // Current edges that will be removed
+  const oldEdge1Distance = distanceMatrix[edge1From][edge1To];
+  const oldEdge2Distance = distanceMatrix[edge2From][edge2To];
+  
+  return (newEdge1Distance + newEdge2Distance) - (oldEdge1Distance + oldEdge2Distance);
+};
 
-const twoOptSwap = (tour: number[], i: number, k: number): number[] => {
-  const newTour = [...tour];
-
+/**
+ * Performs a 2-opt swap by reversing the segment between two positions in-place.
+ * This modifies the tour array directly to avoid memory allocations.
+ * @param tour Current tour as array of city indices (modified in-place)
+ * @param i Start position for the segment to reverse
+ * @param k End position for the segment to reverse
+ */
+const twoOptSwapInPlace = (tour: number[], i: number, k: number): void => {
   // Reverse the segment between i+1 and k
   let left = i + 1;
   let right = k;
 
   while (left < right) {
-    [newTour[left], newTour[right]] = [newTour[right], newTour[left]];
+    [tour[left], tour[right]] = [tour[right], tour[left]];
     left++;
     right--;
   }
-
-  return newTour;
 };
 
 /**
@@ -96,18 +124,20 @@ const linKernighan = (tour: number[], distanceMatrix: number[][]): number[] => {
   while (improved) {
     improved = false;
 
-    // 2-opt improvements
+    // 2-opt improvements with delta calculation and early termination
     for (let i = 0; i < n - 1; i++) {
       for (let k = i + 1; k < n; k++) {
-        const newTour = twoOptSwap(bestTour, i, k);
-        const newDistance = calculateTourDistance(newTour, distanceMatrix);
+        const delta = calculate2OptDelta(bestTour, i, k, distanceMatrix);
 
-        if (newDistance < bestDistance) {
-          bestTour = newTour;
-          bestDistance = newDistance;
+        if (delta < 0) {
+          // Apply the improvement in-place
+          twoOptSwapInPlace(bestTour, i, k);
+          bestDistance += delta;
           improved = true;
+          break; // Early termination - restart with improved tour
         }
       }
+      if (improved) break; // Break outer loop too
     }
 
     // 3-opt improvements (more complex edge swapping)

@@ -1,0 +1,34 @@
+{
+  "name": "lin-kernighan",
+  "version": "1.0.0",
+  "description": "Adaptive k-opt heuristic improving TSP tours by swapping edges to shorten routes.",
+  "main": "dist/cjs/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "cmplr --type-check",
+    "test": "node --test dist/cjs/index.test.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/bredele/lin-kernighan.git"
+  },
+  "keywords": [
+    "tsp",
+    "distance",
+    "tour"
+  ],
+  "author": "Olivier Wietrich",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/bredele/lin-kernighan/issues"
+  },
+  "homepage": "https://github.com/bredele/lin-kernighan#readme",
+  "devDependencies": {
+    "cmplr": "^1.1.0"
+  },
+  "dependencies": {
+    "haversine-matrix": "^1.0.1"
+  }
+}

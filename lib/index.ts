@@ -1,9 +1,4 @@
-const { matrix: haversineMatrix } = require("haversine-matrix");
-
-interface Point {
-  latitude: number;
-  longitude: number;
-}
+import { matrix as haversineMatrix, Point } from "haversine-matrix";
 
 /**
  * Calculates the total distance of a tour by summing distances between consecutive cities.
@@ -182,7 +177,7 @@ const tsp = (points: Point[]): Point[] => {
   if (points.length <= 1 || points.length === 2) {
     return points;
   }
-  const distanceMatrix = haversineMatrix(points, points);
+  const distanceMatrix = haversineMatrix(points);
   // Generate initial tour using nearest neighbor heuristic
   let tour = nearestNeighborTour(distanceMatrix);
   // Optimize tour using Lin-Kernighan algorithm
